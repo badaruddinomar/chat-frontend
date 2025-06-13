@@ -44,6 +44,31 @@ body {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-main: var(--font-inter);
+
+  /* --custom color variable starts--*/
+  --color-primary-1: var(--primary-1);
+  --color-primary-2: var(--primary-2);
+  --color-primary-3: var(--primary-3);
+
+  --color-primary-container-1: var(--primary-container-1);
+  --color-primary-container-2: var(--primary-container-2);
+  --color-primary-container-3: var(--primary-container-3);
+
+  --color-primary-linear-1: var(--primar-linear-1);
+  --color-primary-linear-2: var(--primar-linear-2);
+
+  --color-primary-overlay-1: var(--primary-overlay-1);
+  --color-primary-overlay-2: var(--primary-overlay-2);
+
+  --color-divider: var(--divider);
+
+  --color-background-1: var(--background-1);
+  --color-background-2: var(--background-2);
+
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  /* cusom color variable ends */
 }
 
 :root {
@@ -79,6 +104,38 @@ body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* custom color starts */
+  --primary-1: oklch(0.5095 0.2465 272.24);
+  --primary-2: oklch(0.3648 0.2276 266.78);
+  --primary-3: oklch(0.2263 0.0662 278.47);
+
+  --primary-container-1: oklch(0.9244 0.03786 285.6358);
+  --primary-container-2: oklch(0.858 0.072075 283.0391);
+  --primary-container-3: oklch(0.946 0.0268 285.88);
+
+  --primary-linear-1: linear-gradient(
+    to right,
+    oklch(0.6305 0.2024 279.51 / 0.064),
+    oklch(0.6305 0.2024 279.51 / 0.32)
+  );
+  --primary-linear-2: linear-gradient(
+    to right,
+    oklch(1 0 0),
+    oklch(1 0 0 / 0.48)
+  );
+
+  --primary-overlay-1: oklch(0.6305 0.2024 279.51 / 0.32);
+  --primary-overlay-2: oklch(0.6305 0.2024 279.51 / 0.04);
+
+  --divider: oklch(0.9063 0.0435 266.89);
+
+  --background-1: oklch(1 0 0);
+  --background-2: oklch(0.972 0.013165 262.3796);
+
+  --surface-1: oklch(1 0 0);
+  --surface-2: oklch(0.972 0.013165 262.3796);
+  --surface-3: oklch(0.9421 0.0104 261.79);
+  /* custom color ends */
 }
 
 .dark {
