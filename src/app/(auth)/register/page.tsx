@@ -1,6 +1,6 @@
 import React from "react";
 
-const Singin = () => {
+const Register = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <form className="flex flex-col gap-4">
@@ -12,4 +12,4 @@ const Singin = () => {
   );
 };
 
-export default Singin;
+export default Register;

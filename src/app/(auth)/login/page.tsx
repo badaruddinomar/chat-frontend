@@ -1,6 +1,6 @@
 import React from "react";
 
-const Signup = () => {
+const Login = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <form>
@@ -13,4 +13,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
