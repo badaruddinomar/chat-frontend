@@ -135,6 +135,9 @@ body {
   --surface-1: oklch(1 0 0);
   --surface-2: oklch(0.972 0.013165 262.3796);
   --surface-3: oklch(0.9421 0.0104 261.79);
+
+  --on-surface-1: oklch(0.3135 0.0149 269.21);
+  --on-surface-2: oklch(0.4551 0.0792 266.25);
   /* custom color ends */
 }
 
@@ -177,6 +180,10 @@ body {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    scroll-behavior: smooth;
+    overflow-x: hidden !important;
   }
+}
+.app-container {
+  @apply w-full px-5 mx-auto md:px-6 2xl:px-0 max-w-7xl;
 }
