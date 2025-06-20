@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { useUserRegisterMutation } from "@/redux/apiClient/userApi";
+import { useRouter } from "next/navigation";
 
 const registerSchema = z.object({
   name: z.string().min(2, {
@@ -26,6 +28,8 @@ const registerSchema = z.object({
   }),
 });
 const Register = () => {
+  const [registerHandler, { isLoading }] = useUserRegisterMutation();
+  const router = useRouter();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -35,11 +39,19 @@ const Register = () => {
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof registerSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(formData: z.infer<typeof registerSchema>) {
+    try {
+      const response = await registerHandler(formData).unwrap();
+      console.log(response);
+      if (response?.data?.isVerified === false) {
+        router.push("/verify-email");
+        return;
+      }
+      router.push("/");
+      form.reset();
+    } catch (err: unknown) {
+      console.log(err);
+    }
   }
   return (
     <div className="w-full py-20 min-h-screen">
@@ -101,7 +113,9 @@ const Register = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Processing..." : "Submit"}
+              </Button>
             </form>
           </Form>
         </div>

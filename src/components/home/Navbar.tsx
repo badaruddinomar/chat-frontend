@@ -39,7 +39,7 @@ const Navbar = () => {
               size="sm"
               className="border-purple-200 text-purple-600 hover:bg-purple-50"
             >
-              Sign In
+              <Link href={"/login"}>Sign In</Link>
             </Button>
             <Button
               size="sm"
