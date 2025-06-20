@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { useUserRegisterMutation } from "@/redux/apiClient/userApi";
+import { useRegisterMutation } from "@/redux/apiClient/userApi";
 import { useRouter } from "next/navigation";
 
 const registerSchema = z.object({
@@ -28,7 +28,7 @@ const registerSchema = z.object({
   }),
 });
 const Register = () => {
-  const [registerHandler, { isLoading }] = useUserRegisterMutation();
+  const [registerHandler, { isLoading }] = useRegisterMutation();
   const router = useRouter();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),

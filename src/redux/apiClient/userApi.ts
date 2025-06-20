@@ -6,7 +6,7 @@ export const userApi = createApi({
   baseQuery,
   tagTypes: ["USER"],
   endpoints: (builder) => ({
-    userRegister: builder.mutation({
+    register: builder.mutation({
       query: (bodyData) => ({
         url: "/auth/register",
         method: "POST",
@@ -16,9 +16,9 @@ export const userApi = createApi({
         body: JSON.stringify(bodyData),
       }),
     }),
-    userLogin: builder.mutation({
+    login: builder.mutation({
       query: (bodyData) => ({
-        url: "/auth/signin",
+        url: "/auth/login",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,8 +86,8 @@ export const userApi = createApi({
 });
 
 export const {
-  useUserRegisterMutation,
-  useUserLoginMutation,
+  useRegisterMutation,
+  useLoginMutation,
   useVerifyEmailMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
