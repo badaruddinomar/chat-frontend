@@ -8,7 +8,6 @@ export function middleware(request: NextRequest) {
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
-  console.log("🍪 All cookies:", request.cookies.getAll());
   if (!isProtected) return NextResponse.next();
 
   const token = request.cookies.get("token")?.value;
