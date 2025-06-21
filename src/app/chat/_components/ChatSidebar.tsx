@@ -18,14 +18,14 @@ interface IUser {
 export function ChatSidebar({
   searchQuery,
   setSearchQuery,
-  selectedChat,
-  setSelectedChat,
+  selectedChatId,
+  setSelectedChatId,
   onChatSelect,
 }: {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  selectedChat: string | null;
-  setSelectedChat: (id: string) => void;
+  selectedChatId: string | null;
+  setSelectedChatId: (id: string) => void;
   onChatSelect?: () => void;
 }) {
   const { data: users } = useGetUsersQuery({});
@@ -73,11 +73,11 @@ export function ChatSidebar({
             <div
               key={user?.id}
               onClick={() => {
-                setSelectedChat(user?.id);
+                setSelectedChatId(user?.id);
                 onChatSelect?.();
               }}
               className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-accent ${
-                selectedChat === user?.id ? "bg-accent" : ""
+                selectedChatId === user?.id ? "bg-accent" : ""
               }`}
             >
               <div className="relative">

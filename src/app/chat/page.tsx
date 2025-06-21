@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,10 @@ import {
 } from "lucide-react";
 import { ChatSidebar } from "./_components/ChatSidebar";
 import { useGetUsersQuery } from "@/redux/apiClient/userApi";
+import {
+  useGetMessagesQuery,
+  useSendMessagesMutation,
+} from "@/redux/apiClient/messageApi";
 
 interface IUser {
   id: string;
@@ -26,30 +30,54 @@ interface IUser {
   email: string;
   avatar: string;
 }
-const messages = [
-  {
-    id: 1,
-    role: "user",
-    content: "hi, how are you?",
-  },
-];
+interface IMessage {
+  id: string;
+  text: string;
+  senderId: string;
+  receiverId: string;
+  createdAt: Date;
+  image: {
+    url: string;
+    public_id: string;
+  };
+}
 
 export default function ChatPage() {
   const { data: users } = useGetUsersQuery({});
-  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const { data: messages, refetch: refetchMessages } = useGetMessagesQuery({
+    chatToId: selectedChatId,
+  });
+  const [sendMessageHandler] = useSendMessagesMutation();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [messageInput, setMessageInput] = useState<string>("");
+
   const isLoading = false;
   const selectedContact = users?.data.find(
-    (user: IUser) => user?.id === selectedChat
+    (user: IUser) => user?.id === selectedChatId
   );
 
   const handleChatSelect = () => {
     setSidebarOpen(false); // Close sidebar on mobile when chat is selected
   };
-  const handleSubmit = () => {
-    console.log("message submited");
+  useEffect(() => {
+    refetchMessages();
+  }, [selectedChatId, refetchMessages]);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const bodyData = {
+        text: messageInput,
+      };
+      const response = await sendMessageHandler({
+        chatToId: selectedChatId,
+        bodyData,
+      }).unwrap();
+      console.log(response);
+    } catch (err: unknown) {
+      console.log(err);
+    }
   };
 
   return (
@@ -59,8 +87,8 @@ export default function ChatPage() {
         <ChatSidebar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          selectedChat={selectedChat}
-          setSelectedChat={setSelectedChat}
+          selectedChatId={selectedChatId}
+          setSelectedChatId={setSelectedChatId}
         />
       </div>
 
@@ -70,8 +98,8 @@ export default function ChatPage() {
           <ChatSidebar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
-            selectedChat={selectedChat}
-            setSelectedChat={setSelectedChat}
+            selectedChatId={selectedChatId}
+            setSelectedChatId={setSelectedChatId}
             onChatSelect={handleChatSelect}
           />
         </SheetContent>
@@ -79,7 +107,7 @@ export default function ChatPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {!selectedChat ? (
+        {!selectedChatId ? (
           // Default "Start Messaging" State
           <div className="flex-1 flex flex-col">
             {/* Mobile Header */}
@@ -127,7 +155,7 @@ export default function ChatPage() {
                   variant="ghost"
                   size="icon"
                   className="md:hidden"
-                  onClick={() => setSelectedChat(null)}
+                  onClick={() => setSelectedChatId(null)}
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
@@ -179,28 +207,30 @@ export default function ChatPage() {
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
-                {messages.length === 0 && (
+                {messages?.data.length === 0 && (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">
                       No messages yet. Start the conversation!
                     </p>
                   </div>
                 )}
-                {messages.map((message) => (
+                {messages?.data.map((message: IMessage) => (
                   <div
                     key={message.id}
                     className={`flex ${
-                      message.role === "user" ? "justify-end" : "justify-start"
+                      message?.receiverId === selectedChatId
+                        ? "justify-end"
+                        : "justify-start"
                     }`}
                   >
                     <div
                       className={`max-w-[85%] sm:max-w-[70%] rounded-lg px-3 py-2 ${
-                        message.role === "user"
+                        message?.receiverId === selectedChatId
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted"
                       }`}
                     >
-                      <p className="text-sm break-words">{message.content}</p>
+                      <p className="text-sm break-words">{message?.text}</p>
                     </div>
                   </div>
                 ))}
