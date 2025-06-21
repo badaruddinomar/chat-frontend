@@ -1,8 +1,11 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import socket from "@/lib/socket";
 import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface IChatContacts {
   id: number;
@@ -29,10 +32,25 @@ export function ChatSidebar({
   onChatSelect?: () => void;
   chatContacts: IChatContacts[];
 }) {
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const filteredContacts = chatContacts.filter((contact: IChatContacts) =>
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to server");
+    });
+
+    socket.on("getOnlineUsers", (users: string[]) => {
+      setOnlineUsers(users);
+    });
+
+    return () => {
+      socket.off("getOnlineUsers");
+    };
+  }, []);
+  console.log(onlineUsers);
   return (
     <div className="flex flex-col h-full bg-background border-r">
       {/* Sidebar Header */}
@@ -68,7 +86,7 @@ export function ChatSidebar({
               <div className="relative">
                 <Avatar>
                   <AvatarImage
-                    src={contact.avatar || "/placeholder.svg"}
+                    src={contact.avatar || "/Logo.svg"}
                     alt={contact.name}
                   />
                   <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>

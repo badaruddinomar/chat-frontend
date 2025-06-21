@@ -23,7 +23,7 @@ const chatContacts = [
   {
     id: 1,
     name: "Sarah Wilson",
-    avatar: "/placeholder.svg?height=40&width=40",
+    avatar: "/Logo.svg",
     lastMessage: "Thanks for the help with the project!",
     time: "1h ago",
     unread: 0,
@@ -32,7 +32,7 @@ const chatContacts = [
   {
     id: 2,
     name: "Team Chat",
-    avatar: "/placeholder.svg?height=40&width=40",
+    avatar: "/Logo.svg",
     lastMessage: "Meeting at 3 PM today",
     time: "3h ago",
     unread: 5,
@@ -41,7 +41,7 @@ const chatContacts = [
   {
     id: 3,
     name: "John Doe",
-    avatar: "/placeholder.svg?height=40&width=40",
+    avatar: "/Logo.svg",
     lastMessage: "See you tomorrow!",
     time: "1d ago",
     unread: 0,
@@ -50,7 +50,7 @@ const chatContacts = [
   {
     id: 4,
     name: "Design Team",
-    avatar: "/placeholder.svg?height=40&width=40",
+    avatar: "/Logo.svg",
     lastMessage: "New mockups are ready for review",
     time: "2d ago",
     unread: 1,
@@ -179,7 +179,7 @@ export default function ChatPage() {
 
                 <Avatar className="h-8 w-8">
                   <AvatarImage
-                    src={selectedContact?.avatar || "/placeholder.svg"}
+                    src={selectedContact?.avatar || "/Logo.svg"}
                     alt={selectedContact?.name}
                   />
                   <AvatarFallback>
