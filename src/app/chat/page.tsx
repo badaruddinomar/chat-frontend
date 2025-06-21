@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useChat } from "@ai-sdk/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,15 +22,6 @@ import { ChatSidebar } from "./_components/ChatSidebar";
 const chatContacts = [
   {
     id: 1,
-    name: "AI Assistant",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "Hello! How can I help you today?",
-    time: "2m ago",
-    unread: 2,
-    online: true,
-  },
-  {
-    id: 2,
     name: "Sarah Wilson",
     avatar: "/placeholder.svg?height=40&width=40",
     lastMessage: "Thanks for the help with the project!",
@@ -40,7 +30,7 @@ const chatContacts = [
     online: true,
   },
   {
-    id: 3,
+    id: 2,
     name: "Team Chat",
     avatar: "/placeholder.svg?height=40&width=40",
     lastMessage: "Meeting at 3 PM today",
@@ -49,7 +39,7 @@ const chatContacts = [
     online: false,
   },
   {
-    id: 4,
+    id: 3,
     name: "John Doe",
     avatar: "/placeholder.svg?height=40&width=40",
     lastMessage: "See you tomorrow!",
@@ -58,7 +48,7 @@ const chatContacts = [
     online: false,
   },
   {
-    id: 5,
+    id: 4,
     name: "Design Team",
     avatar: "/placeholder.svg?height=40&width=40",
     lastMessage: "New mockups are ready for review",
@@ -67,23 +57,29 @@ const chatContacts = [
     online: true,
   },
 ];
+const messages = [
+  {
+    id: 1,
+    role: "user",
+    content: "hi, how are you?",
+  },
+];
 
 export default function ChatPage() {
   const [selectedChat, setSelectedChat] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "/api/chat",
-    });
-
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [messageInput, setMessageInput] = useState<string>("");
+  const isLoading = false;
   const selectedContact = chatContacts.find(
     (contact) => contact.id === selectedChat
   );
 
   const handleChatSelect = () => {
     setSidebarOpen(false); // Close sidebar on mobile when chat is selected
+  };
+  const handleSubmit = () => {
+    console.log("message submited");
   };
 
   return (
@@ -145,7 +141,7 @@ export default function ChatPage() {
                     start a new conversation.
                   </p>
                 </div>
-                <Button className="mt-6" onClick={() => setSidebarOpen(true)}>
+                <Button className="mt-6">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Browse Contacts
                 </Button>
@@ -273,8 +269,8 @@ export default function ChatPage() {
                 </Button>
                 <div className="flex-1 relative">
                   <Input
-                    value={input}
-                    onChange={handleInputChange}
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
                     placeholder="Type a message..."
                     className="pr-10"
                   />
@@ -290,7 +286,7 @@ export default function ChatPage() {
                 <Button
                   type="submit"
                   size="icon"
-                  disabled={!input.trim() || isLoading}
+                  disabled={!messageInput.trim() || isLoading}
                 >
                   <Send className="h-4 w-4" />
                 </Button>
