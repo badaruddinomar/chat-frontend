@@ -73,6 +73,12 @@ export const userApi = createApi({
         method: "GET",
       }),
     }),
+    getUsers: builder.query({
+      query: () => ({
+        url: `/users/all`,
+        method: "GET",
+      }),
+    }),
     logout: builder.mutation({
       query: () => ({
         url: `/auth/logout`,
@@ -94,4 +100,5 @@ export const {
   useResendVerifyCodeMutation,
   useLogoutMutation,
   useGetUserQuery,
+  useGetUsersQuery,
 } = userApi;

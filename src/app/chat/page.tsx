@@ -18,45 +18,14 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { ChatSidebar } from "./_components/ChatSidebar";
+import { useGetUsersQuery } from "@/redux/apiClient/userApi";
 
-const chatContacts = [
-  {
-    id: 1,
-    name: "Sarah Wilson",
-    avatar: "/Logo.svg",
-    lastMessage: "Thanks for the help with the project!",
-    time: "1h ago",
-    unread: 0,
-    online: true,
-  },
-  {
-    id: 2,
-    name: "Team Chat",
-    avatar: "/Logo.svg",
-    lastMessage: "Meeting at 3 PM today",
-    time: "3h ago",
-    unread: 5,
-    online: false,
-  },
-  {
-    id: 3,
-    name: "John Doe",
-    avatar: "/Logo.svg",
-    lastMessage: "See you tomorrow!",
-    time: "1d ago",
-    unread: 0,
-    online: false,
-  },
-  {
-    id: 4,
-    name: "Design Team",
-    avatar: "/Logo.svg",
-    lastMessage: "New mockups are ready for review",
-    time: "2d ago",
-    unread: 1,
-    online: true,
-  },
-];
+interface IUser {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+}
 const messages = [
   {
     id: 1,
@@ -66,13 +35,14 @@ const messages = [
 ];
 
 export default function ChatPage() {
-  const [selectedChat, setSelectedChat] = useState<number | null>(null);
+  const { data: users } = useGetUsersQuery({});
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [messageInput, setMessageInput] = useState<string>("");
   const isLoading = false;
-  const selectedContact = chatContacts.find(
-    (contact) => contact.id === selectedChat
+  const selectedContact = users?.data.find(
+    (user: IUser) => user?.id === selectedChat
   );
 
   const handleChatSelect = () => {
@@ -91,7 +61,6 @@ export default function ChatPage() {
           setSearchQuery={setSearchQuery}
           selectedChat={selectedChat}
           setSelectedChat={setSelectedChat}
-          chatContacts={chatContacts}
         />
       </div>
 
@@ -104,7 +73,6 @@ export default function ChatPage() {
             selectedChat={selectedChat}
             setSelectedChat={setSelectedChat}
             onChatSelect={handleChatSelect}
-            chatContacts={chatContacts}
           />
         </SheetContent>
       </Sheet>
