@@ -3,53 +3,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import socket from "@/lib/socket";
-import { useGetUsersQuery } from "@/redux/apiClient/userApi";
+import { useChat } from "@/hooks/useChat";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
-
-interface IUser {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-}
+import { IUser } from "@/types";
 
 export function ChatSidebar({
   searchQuery,
   setSearchQuery,
-  selectedChatId,
-  setSelectedChatId,
   onChatSelect,
 }: {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  selectedChatId: string | null;
-  setSelectedChatId: (id: string) => void;
   onChatSelect?: () => void;
 }) {
-  const { data: users } = useGetUsersQuery({});
-  const [onlineUserIds, setOnlineUserIds] = useState<string[]>([]);
-  const filteredContacts = users?.data?.filter((user: IUser) =>
+  const { setSelectedUser, users, selectedUser } = useChat();
+  const { onlineUserIds } = useChat();
+  const filteredContacts = users?.filter((user: IUser) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to server");
-    });
-
-    socket.on("getOnlineUsers", (usersIds: string[]) => {
-      setOnlineUserIds(usersIds);
-    });
-
-    return () => {
-      socket.off("getOnlineUsers");
-    };
-  }, []);
-  console.log(onlineUserIds);
   return (
-    <div className="flex flex-col h-full bg-background border-r">
+    <div className="flex w-full flex-col h-full bg-background border-r">
       {/* Sidebar Header */}
       <div className="p-4 border-b">
         <div className="flex items-center justify-between mb-4">
@@ -73,17 +47,17 @@ export function ChatSidebar({
             <div
               key={user?.id}
               onClick={() => {
-                setSelectedChatId(user?.id);
+                setSelectedUser(user);
                 onChatSelect?.();
               }}
               className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-accent ${
-                selectedChatId === user?.id ? "bg-accent" : ""
+                selectedUser?.id === user?.id ? "bg-accent" : ""
               }`}
             >
               <div className="relative">
                 <Avatar>
                   <AvatarImage
-                    src={user?.avatar || "/Logo.svg"}
+                    src={user?.avatar?.url || "/Logo.svg"}
                     alt={user?.name}
                   />
                   <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>

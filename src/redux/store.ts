@@ -4,6 +4,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import { PersistConfig, persistReducer, persistStore } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import userReducer from "./reducer/userReducer";
+import chatReducer from "./reducer/chatReducer";
 import { userApi } from "./apiClient/userApi";
 import { messageApi } from "./apiClient/messageApi";
 
@@ -30,6 +31,7 @@ const storage =
 // Combine reducers
 const rootReducer = combineReducers({
   userReducer,
+  chatReducer,
   [userApi.reducerPath]: userApi.reducer,
   [messageApi.reducerPath]: messageApi.reducer,
 });

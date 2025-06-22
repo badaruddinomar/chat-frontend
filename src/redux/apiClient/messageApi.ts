@@ -11,6 +11,7 @@ export const messageApi = createApi({
         url: `/messages/all/${chatToId}`,
         method: "GET",
       }),
+      providesTags: ["MESSAGE"],
     }),
     sendMessages: builder.mutation({
       query: ({ chatToId, formData }) => ({

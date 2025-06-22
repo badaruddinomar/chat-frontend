@@ -1,11 +1,15 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   MessageCircle,
   Send,
@@ -18,63 +22,35 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { ChatSidebar } from "./_components/ChatSidebar";
-import { useGetUsersQuery } from "@/redux/apiClient/userApi";
-import {
-  useGetMessagesQuery,
-  useSendMessagesMutation,
-} from "@/redux/apiClient/messageApi";
-
-interface IUser {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-}
-interface IMessage {
-  id: string;
-  text: string;
-  senderId: string;
-  receiverId: string;
-  createdAt: Date;
-  image: {
-    url: string;
-    public_id: string;
-  };
-}
+import { useChat } from "@/hooks/useChat";
+import { IMessage } from "@/types";
 
 export default function ChatPage() {
-  const { data: users } = useGetUsersQuery({});
-  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-  const { data: messages, refetch: refetchMessages } = useGetMessagesQuery({
-    chatToId: selectedChatId,
-  });
-  const [sendMessageHandler] = useSendMessagesMutation();
+  const {
+    messages,
+    sendMessage,
+    selectedUser,
+    setSelectedUser,
+    onlineUserIds,
+  } = useChat();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [messageInput, setMessageInput] = useState<string>("");
 
   const isLoading = false;
-  const selectedContact = users?.data.find(
-    (user: IUser) => user?.id === selectedChatId
-  );
 
   const handleChatSelect = () => {
     setSidebarOpen(false); // Close sidebar on mobile when chat is selected
   };
-  useEffect(() => {
-    refetchMessages();
-  }, [selectedChatId, refetchMessages]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const bodyData = {
+      const formData = {
         text: messageInput,
       };
-      const response = await sendMessageHandler({
-        chatToId: selectedChatId,
-        bodyData,
-      }).unwrap();
-      console.log(response);
+      await sendMessage(formData);
+      setMessageInput("");
     } catch (err: unknown) {
       console.log(err);
     }
@@ -87,19 +63,16 @@ export default function ChatPage() {
         <ChatSidebar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          selectedChatId={selectedChatId}
-          setSelectedChatId={setSelectedChatId}
         />
       </div>
 
       {/* Mobile Sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent side="left" className="p-0 w-80">
+          <SheetTitle className="sr-only">Sidebar</SheetTitle>
           <ChatSidebar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
-            selectedChatId={selectedChatId}
-            setSelectedChatId={setSelectedChatId}
             onChatSelect={handleChatSelect}
           />
         </SheetContent>
@@ -107,7 +80,7 @@ export default function ChatPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {!selectedChatId ? (
+        {!selectedUser ? (
           // Default "Start Messaging" State
           <div className="flex-1 flex flex-col">
             {/* Mobile Header */}
@@ -155,7 +128,7 @@ export default function ChatPage() {
                   variant="ghost"
                   size="icon"
                   className="md:hidden"
-                  onClick={() => setSelectedChatId(null)}
+                  onClick={() => setSelectedUser(null)}
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
@@ -175,20 +148,20 @@ export default function ChatPage() {
 
                 <Avatar className="h-8 w-8">
                   <AvatarImage
-                    src={selectedContact?.avatar || "/Logo.svg"}
-                    alt={selectedContact?.name}
+                    src={selectedUser?.avatar?.url || "/Logo.svg"}
+                    alt={selectedUser?.name}
                   />
                   <AvatarFallback>
-                    {selectedContact?.name.charAt(0)}
+                    {selectedUser?.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
                   <h3 className="font-semibold truncate">
-                    {selectedContact?.name}
+                    {selectedUser?.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedContact?.online ? "Online" : "Last seen recently"}
-                  </p>
+                  {selectedUser && onlineUserIds?.includes(selectedUser.id)
+                    ? "Online"
+                    : "Last seen recently"}
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -207,25 +180,25 @@ export default function ChatPage() {
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
-                {messages?.data.length === 0 && (
+                {messages.length === 0 && (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">
                       No messages yet. Start the conversation!
                     </p>
                   </div>
                 )}
-                {messages?.data.map((message: IMessage) => (
+                {messages?.map((message: IMessage, ind) => (
                   <div
-                    key={message.id}
+                    key={ind}
                     className={`flex ${
-                      message?.receiverId === selectedChatId
+                      message?.receiverId === selectedUser?.id
                         ? "justify-end"
                         : "justify-start"
                     }`}
                   >
                     <div
                       className={`max-w-[85%] sm:max-w-[70%] rounded-lg px-3 py-2 ${
-                        message?.receiverId === selectedChatId
+                        message?.receiverId === selectedUser?.id
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted"
                       }`}
