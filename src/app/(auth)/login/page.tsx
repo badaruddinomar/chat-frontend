@@ -13,11 +13,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { useLoginMutation } from "@/redux/apiClient/userApi";
+import {
+  useLoginMutation,
+  useVerifyOtpMutation,
+} from "@/redux/apiClient/userApi";
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/redux/hooks";
+import { addUserToStore } from "@/redux/reducer/userReducer";
+import { useState } from "react";
 
 const loginSchema = z.object({
-  email: z.string().email({
+  phone: z.string().min(14, {
     message: "Invalid email address.",
   }),
   password: z.string().min(6, {
@@ -27,11 +33,16 @@ const loginSchema = z.object({
 
 const Login = () => {
   const [loginHandler, { isLoading }] = useLoginMutation();
+  const [verifyOtpHandler, { isLoading: isOtpLoading }] =
+    useVerifyOtpMutation();
+  const dispatch = useAppDispatch();
   const router = useRouter();
+  const [otp, setOtp] = useState("");
+  const [phone, setPhone] = useState("");
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      phone: "",
       password: "",
     },
   });
@@ -39,13 +50,29 @@ const Login = () => {
   async function onSubmit(formData: z.infer<typeof loginSchema>) {
     try {
       const response = await loginHandler(formData).unwrap();
-      console.log(response);
-      if (response?.data?.isVerified === false) {
-        router.push("/verify-email");
-        return;
+      if (response.success) {
+        dispatch(addUserToStore(response.data));
+        localStorage.setItem("token", response.data.token);
+        router.push("/chat");
       }
-      router.push("/");
-      form.reset();
+    } catch (err: unknown) {
+      console.log(err);
+    }
+  }
+  async function onOtpSubmit(e: React.FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    try {
+      const formData = {
+        otp: otp,
+        phone: phone,
+      };
+      const response = await verifyOtpHandler(formData).unwrap();
+      if (response.success) {
+        console.log(response.data);
+        dispatch(addUserToStore(response.data));
+        localStorage.setItem("token", response.data.token);
+        router.push("/chat");
+      }
     } catch (err: unknown) {
       console.log(err);
     }
@@ -65,7 +92,7 @@ const Login = () => {
         </div>
         <div className="w-1/2">
           <h2 className="font-main text-3xl text-surface-1">Get Started Now</h2>
-          <p>Let’s create your account</p>
+          <p>Let’s create admin account</p>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -73,12 +100,12 @@ const Login = () => {
             >
               <FormField
                 control={form.control}
-                name="email"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder="Set your email" {...field} />
+                      <Input placeholder="Set your phone" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -102,6 +129,26 @@ const Login = () => {
               </Button>
             </form>
           </Form>
+          <h2 className="font-main text-3xl text-surface-1">Get Started Now</h2>
+          <p>Let’s create Customer account</p>
+
+          <form>
+            <input
+              type="text"
+              placeholder="Enter your phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Enter your otp"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <button type="submit" disabled={isOtpLoading} onClick={onOtpSubmit}>
+              {isOtpLoading ? "Processing..." : "Verify OTP"}
+            </button>
+          </form>
         </div>
       </div>
     </div>

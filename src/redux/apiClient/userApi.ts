@@ -16,16 +16,6 @@ export const userApi = createApi({
         body: JSON.stringify(bodyData),
       }),
     }),
-    login: builder.mutation({
-      query: (bodyData) => ({
-        url: "/auth/login",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bodyData),
-      }),
-    }),
     verifyEmail: builder.mutation({
       query: (bodyData) => ({
         url: "/auth/verify-email",
@@ -56,7 +46,6 @@ export const userApi = createApi({
         body: JSON.stringify(bodyData),
       }),
     }),
-
     resendVerifyCode: builder.mutation({
       query: (bodyData) => ({
         url: `/auth/resend-verify-code`,
@@ -88,6 +77,28 @@ export const userApi = createApi({
         },
       }),
     }),
+    // farmer chat app test--
+    verifyOtp: builder.mutation({
+      query: (bodyData) => ({
+        url: `/auth/customer/verify-otp`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      }),
+    }),
+    // farmer admin login--
+    login: builder.mutation({
+      query: (bodyData) => ({
+        url: "/auth/admin/login",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      }),
+    }),
   }),
 });
 
@@ -101,4 +112,6 @@ export const {
   useLogoutMutation,
   useGetUserQuery,
   useGetUsersQuery,
+  //
+  useVerifyOtpMutation,
 } = userApi;

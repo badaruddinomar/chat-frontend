@@ -1,8 +1,11 @@
 import { io, Socket } from "socket.io-client";
-
-const socket: Socket = io("http://localhost:4000", {
-  withCredentials: true,
+const token = localStorage.getItem("token");
+const socket: Socket = io("http://localhost:3000", {
+  // withCredentials: true,
   transports: ["websocket"],
+  auth: {
+    token,
+  },
 });
 socket.on("connect", () => {
   console.log("✅ Socket connected:", socket.id);

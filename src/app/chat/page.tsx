@@ -33,6 +33,8 @@ export default function ChatPage() {
     setSelectedUser,
     onlineUserIds,
   } = useChat();
+  console.log("MESSAGES:", messages);
+  console.log("ONLINEUSERSIDS:", onlineUserIds);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [messageInput, setMessageInput] = useState<string>("");
@@ -47,7 +49,7 @@ export default function ChatPage() {
     e.preventDefault();
     try {
       const formData = {
-        text: messageInput,
+        message: messageInput,
       };
       await sendMessage(formData);
       setMessageInput("");

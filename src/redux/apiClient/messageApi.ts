@@ -7,19 +7,16 @@ export const messageApi = createApi({
   tagTypes: ["MESSAGE"],
   endpoints: (builder) => ({
     getMessages: builder.query({
-      query: ({ chatToId }) => ({
-        url: `/messages/all/${chatToId}`,
+      query: () => ({
+        url: `/messages`,
         method: "GET",
       }),
       providesTags: ["MESSAGE"],
     }),
     sendMessages: builder.mutation({
-      query: ({ chatToId, formData }) => ({
-        url: `/messages/send/${chatToId}`,
+      query: (formData) => ({
+        url: `/messages/send`,
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       }),
     }),

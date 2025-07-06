@@ -29,7 +29,7 @@ export const useChat = () => {
     data: fetchedMessages,
     isLoading: isMessagesLoading,
     refetch: refetchMessages,
-  } = useGetMessagesQuery({ chatToId: selectedUser?.id });
+  } = useGetMessagesQuery(undefined);
 
   const [sendMessageMutation] = useSendMessagesMutation();
 
@@ -68,7 +68,7 @@ export const useChat = () => {
     };
   }, []);
 
-  const sendMessage = async (formData: { text: string; image?: File }) => {
+  const sendMessage = async (formData: { message: string; image?: File }) => {
     if (!selectedUser) return;
     try {
       const res = await sendMessageMutation({
