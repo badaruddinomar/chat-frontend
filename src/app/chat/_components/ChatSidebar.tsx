@@ -19,7 +19,7 @@ export function ChatSidebar({
   const { setSelectedUser, users, selectedUser } = useChat();
   const { onlineUserIds } = useChat();
   const filteredContacts = users?.filter((user: IUser) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    user.user?.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -45,30 +45,29 @@ export function ChatSidebar({
         <div className="p-2">
           {filteredContacts?.map((user: IUser) => (
             <div
-              key={user?.id}
+              key={user?.customerId}
               onClick={() => {
                 setSelectedUser(user);
                 onChatSelect?.();
               }}
               className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-accent ${
-                selectedUser?.id === user?.id ? "bg-accent" : ""
+                selectedUser?.user?.userId === user?.user?.userId
+                  ? "bg-accent"
+                  : ""
               }`}
             >
-              <div className="relative">
+              <div className="relative bg-black rounded-full">
                 <Avatar>
-                  <AvatarImage
-                    src={user?.avatar?.url || "/Logo.svg"}
-                    alt={user?.name}
-                  />
-                  <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+                  <AvatarImage src={"/Logo.svg"} alt={user?.user?.name} />
+                  <AvatarFallback>{user?.user?.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                {user?.id in onlineUserIds && (
+                {user?.user?.userId in onlineUserIds && (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className="font-medium truncate">{user?.name}</p>
+                  <p className="font-medium truncate">{user?.user?.name}</p>
                   {/* <span className="text-xs text-muted-foreground">
                     {user?.time}
                   </span> */}

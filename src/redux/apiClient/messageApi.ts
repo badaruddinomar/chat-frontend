@@ -7,10 +7,16 @@ export const messageApi = createApi({
   tagTypes: ["MESSAGE"],
   endpoints: (builder) => ({
     getMessages: builder.query({
-      query: () => ({
-        url: `/messages`,
-        method: "GET",
-      }),
+      query: (selectedUser) => {
+        const baseUrl = "/messages";
+        const params = selectedUser?.user?.userId
+          ? `?receiverId=${selectedUser.user.userId}`
+          : "";
+        return {
+          url: `${baseUrl}${params}`,
+          method: "GET",
+        };
+      },
       providesTags: ["MESSAGE"],
     }),
     sendMessages: builder.mutation({

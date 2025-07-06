@@ -29,7 +29,7 @@ export const useChat = () => {
     data: fetchedMessages,
     isLoading: isMessagesLoading,
     refetch: refetchMessages,
-  } = useGetMessagesQuery(undefined);
+  } = useGetMessagesQuery(selectedUser);
 
   const [sendMessageMutation] = useSendMessagesMutation();
 
@@ -42,12 +42,13 @@ export const useChat = () => {
   useEffect(() => {
     if (!socket || !socket.connected) return;
     const handleNewMessage = (newMessage: IMessage) => {
-      if (
-        newMessage?.senderId === selectedUser?.id ||
-        newMessage?.receiverId === selectedUser?.id
-      ) {
-        dispatch(addMessage(newMessage));
-      }
+      console.log("NEW MESSAGE:", newMessage);
+      // if (
+      //   newMessage?.senderId === selectedUser?.user?.userId ||
+      //   newMessage?.receiverId === selectedUser?.user?.userId
+      // ) {
+      dispatch(addMessage(newMessage));
+      // }
     };
 
     socket.on("newMessage", handleNewMessage);
@@ -56,25 +57,20 @@ export const useChat = () => {
       socket.off("newMessage", handleNewMessage);
     };
   }, [selectedUser, dispatch]);
+
   useEffect(() => {
     const handleOnlineUsers = (userIds: string[]) => {
       setOnlineUserIds(userIds);
     };
-
-    socket.on("getOnlineUsers", handleOnlineUsers);
-
+    socket.on("onlineUsers", handleOnlineUsers);
     return () => {
-      socket.off("getOnlineUsers", handleOnlineUsers);
+      socket.off("onlineUsers", handleOnlineUsers);
     };
   }, []);
 
-  const sendMessage = async (formData: { message: string; image?: File }) => {
-    if (!selectedUser) return;
+  const sendMessage = async (formData: { message: string }) => {
     try {
-      const res = await sendMessageMutation({
-        chatToId: selectedUser.id,
-        formData,
-      }).unwrap();
+      const res = await sendMessageMutation(formData).unwrap();
       dispatch(addMessage(res?.data));
     } catch (error) {
       console.error("Send message error:", error);

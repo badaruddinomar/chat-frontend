@@ -64,7 +64,7 @@ export const userApi = createApi({
     }),
     getUsers: builder.query({
       query: () => ({
-        url: `/users/all`,
+        url: `/customers`,
         method: "GET",
       }),
     }),

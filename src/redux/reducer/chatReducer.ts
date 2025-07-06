@@ -18,7 +18,9 @@ const chatSlice = createSlice({
       state.selectedUser = action.payload;
     },
     addMessage: (state, action: PayloadAction<IMessage>) => {
-      const exists = state.messages.some((msg) => msg.id === action.payload.id);
+      const exists = state.messages.some(
+        (msg) => msg.messageId === action.payload.messageId
+      );
       if (!exists) {
         state.messages.push(action.payload);
       }
