@@ -37,7 +37,7 @@ const Testimonials = () => {
               content:
                 "ChatVibe has completely transformed how our team communicates. The real-time features and seamless integration make collaboration effortless.",
               rating: 5,
-              avatar: "/placeholder.svg?height=60&width=60",
+              avatar: "/Logo.svg",
             },
             {
               name: "Michael Chen",
@@ -45,7 +45,7 @@ const Testimonials = () => {
               content:
                 "The security features give me peace of mind, and the user experience is absolutely fantastic. Our entire company runs on ChatVibe now.",
               rating: 5,
-              avatar: "/placeholder.svg?height=60&width=60",
+              avatar: "/Logo.svg",
             },
             {
               name: "Emily Rodriguez",
@@ -53,7 +53,7 @@ const Testimonials = () => {
               content:
                 "Managing a distributed team has never been easier. ChatVibe keeps everyone connected and productive, no matter where they are.",
               rating: 5,
-              avatar: "/placeholder.svg?height=60&width=60",
+              avatar: "/Logo.svg",
             },
           ].map((testimonial, index) => (
             <Card
@@ -74,7 +74,7 @@ const Testimonials = () => {
                 </p>
                 <div className="flex items-center space-x-4">
                   <Image
-                    src={testimonial.avatar || "/placeholder.svg"}
+                    src={testimonial.avatar || "/Logo.svg"}
                     alt={testimonial.name}
                     className="w-12 h-12 rounded-full"
                     width={60}

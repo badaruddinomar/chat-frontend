@@ -1,40 +1,29 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useChat } from "@/hooks/useChat";
 import { Search } from "lucide-react";
-
-interface IChatContacts {
-  id: number;
-  name: string;
-  avatar: string;
-  lastMessage: string;
-  time: string;
-  unread: number;
-  online: boolean;
-}
+import { IUser } from "@/types";
 
 export function ChatSidebar({
   searchQuery,
   setSearchQuery,
-  selectedChat,
-  setSelectedChat,
   onChatSelect,
-  chatContacts,
 }: {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  selectedChat: number | null;
-  setSelectedChat: (id: number) => void;
   onChatSelect?: () => void;
-  chatContacts: IChatContacts[];
 }) {
-  const filteredContacts = chatContacts.filter((contact: IChatContacts) =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const { setSelectedUser, users, selectedUser } = useChat();
+  const { onlineUserIds } = useChat();
+  const filteredContacts = users?.filter((user: IUser) =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col h-full bg-background border-r">
+    <div className="flex w-full flex-col h-full bg-background border-r">
       {/* Sidebar Header */}
       <div className="p-4 border-b">
         <div className="flex items-center justify-between mb-4">
@@ -53,46 +42,46 @@ export function ChatSidebar({
 
       {/* Contacts List */}
       <ScrollArea className="flex-1">
-        <div>
-          {filteredContacts.map((contact) => (
+        <div className="p-2">
+          {filteredContacts?.map((user: IUser) => (
             <div
-              key={contact.id}
+              key={user?.id}
               onClick={() => {
-                setSelectedChat(contact.id);
+                setSelectedUser(user);
                 onChatSelect?.();
               }}
-              className={`flex items-center gap-3 py-3 px-2 rounded-lg cursor-pointer transition-colors hover:bg-accent ${
-                selectedChat === contact.id ? "bg-accent" : ""
+              className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-accent ${
+                selectedUser?.id === user?.id ? "bg-accent" : ""
               }`}
             >
               <div className="relative">
                 <Avatar>
                   <AvatarImage
-                    src={contact.avatar || "/placeholder.svg"}
-                    alt={contact.name}
+                    src={user?.avatar?.url || "/Logo.svg"}
+                    alt={user?.name}
                   />
-                  <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                {contact.online && (
+                {user?.id in onlineUserIds && (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className="font-medium truncate">{contact.name}</p>
-                  <span className="text-xs text-muted-foreground">
-                    {contact.time}
-                  </span>
+                  <p className="font-medium truncate">{user?.name}</p>
+                  {/* <span className="text-xs text-muted-foreground">
+                    {user?.time}
+                  </span> */}
                 </div>
-                <p className="text-sm text-muted-foreground truncate">
-                  {contact.lastMessage}
-                </p>
+                {/* <p className="text-sm text-muted-foreground truncate">
+                  {user?.lastMessage}
+                </p> */}
               </div>
-              {contact.unread > 0 && (
+              {/* {user?.unread > 0 && (
                 <Badge variant="default" className="ml-2">
-                  {contact.unread}
+                  {user?.unread}
                 </Badge>
-              )}
+              )} */}
             </div>
           ))}
         </div>

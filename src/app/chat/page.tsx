@@ -1,11 +1,15 @@
 "use client";
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   MessageCircle,
   Send,
@@ -18,68 +22,38 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { ChatSidebar } from "./_components/ChatSidebar";
-
-const chatContacts = [
-  {
-    id: 1,
-    name: "Sarah Wilson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "Thanks for the help with the project!",
-    time: "1h ago",
-    unread: 0,
-    online: true,
-  },
-  {
-    id: 2,
-    name: "Team Chat",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "Meeting at 3 PM today",
-    time: "3h ago",
-    unread: 5,
-    online: false,
-  },
-  {
-    id: 3,
-    name: "John Doe",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "See you tomorrow!",
-    time: "1d ago",
-    unread: 0,
-    online: false,
-  },
-  {
-    id: 4,
-    name: "Design Team",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "New mockups are ready for review",
-    time: "2d ago",
-    unread: 1,
-    online: true,
-  },
-];
-const messages = [
-  {
-    id: 1,
-    role: "user",
-    content: "hi, how are you?",
-  },
-];
+import { useChat } from "@/hooks/useChat";
+import { IMessage } from "@/types";
 
 export default function ChatPage() {
-  const [selectedChat, setSelectedChat] = useState<number | null>(null);
+  const {
+    messages,
+    sendMessage,
+    selectedUser,
+    setSelectedUser,
+    onlineUserIds,
+  } = useChat();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [messageInput, setMessageInput] = useState<string>("");
+
   const isLoading = false;
-  const selectedContact = chatContacts.find(
-    (contact) => contact.id === selectedChat
-  );
 
   const handleChatSelect = () => {
     setSidebarOpen(false); // Close sidebar on mobile when chat is selected
   };
-  const handleSubmit = () => {
-    console.log("message submited");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const formData = {
+        text: messageInput,
+      };
+      await sendMessage(formData);
+      setMessageInput("");
+    } catch (err: unknown) {
+      console.log(err);
+    }
   };
 
   return (
@@ -89,29 +63,24 @@ export default function ChatPage() {
         <ChatSidebar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          selectedChat={selectedChat}
-          setSelectedChat={setSelectedChat}
-          chatContacts={chatContacts}
         />
       </div>
 
       {/* Mobile Sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent side="left" className="p-0 w-80">
+          <SheetTitle className="sr-only">Sidebar</SheetTitle>
           <ChatSidebar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
-            selectedChat={selectedChat}
-            setSelectedChat={setSelectedChat}
             onChatSelect={handleChatSelect}
-            chatContacts={chatContacts}
           />
         </SheetContent>
       </Sheet>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {!selectedChat ? (
+        {!selectedUser ? (
           // Default "Start Messaging" State
           <div className="flex-1 flex flex-col">
             {/* Mobile Header */}
@@ -159,7 +128,7 @@ export default function ChatPage() {
                   variant="ghost"
                   size="icon"
                   className="md:hidden"
-                  onClick={() => setSelectedChat(null)}
+                  onClick={() => setSelectedUser(null)}
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
@@ -179,20 +148,20 @@ export default function ChatPage() {
 
                 <Avatar className="h-8 w-8">
                   <AvatarImage
-                    src={selectedContact?.avatar || "/placeholder.svg"}
-                    alt={selectedContact?.name}
+                    src={selectedUser?.avatar?.url || "/Logo.svg"}
+                    alt={selectedUser?.name}
                   />
                   <AvatarFallback>
-                    {selectedContact?.name.charAt(0)}
+                    {selectedUser?.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
                   <h3 className="font-semibold truncate">
-                    {selectedContact?.name}
+                    {selectedUser?.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedContact?.online ? "Online" : "Last seen recently"}
-                  </p>
+                  {selectedUser && onlineUserIds?.includes(selectedUser.id)
+                    ? "Online"
+                    : "Last seen recently"}
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -218,21 +187,23 @@ export default function ChatPage() {
                     </p>
                   </div>
                 )}
-                {messages.map((message) => (
+                {messages?.map((message: IMessage, ind) => (
                   <div
-                    key={message.id}
+                    key={ind}
                     className={`flex ${
-                      message.role === "user" ? "justify-end" : "justify-start"
+                      message?.receiverId === selectedUser?.id
+                        ? "justify-end"
+                        : "justify-start"
                     }`}
                   >
                     <div
                       className={`max-w-[85%] sm:max-w-[70%] rounded-lg px-3 py-2 ${
-                        message.role === "user"
+                        message?.receiverId === selectedUser?.id
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted"
                       }`}
                     >
-                      <p className="text-sm break-words">{message.content}</p>
+                      <p className="text-sm break-words">{message?.text}</p>
                     </div>
                   </div>
                 ))}

@@ -69,7 +69,7 @@ const Hero = () => {
         <div className="mt-16 relative max-w-5xl mx-auto">
           <div className="relative bg-white rounded-3xl shadow-2xl p-4 transform hover:scale-105 transition-transform duration-500">
             <Image
-              src="/placeholder.svg?height=600&width=1000"
+              src="/Logo.svg"
               alt="ChatVibe Interface Preview"
               width={1000}
               height={600}

@@ -2,7 +2,7 @@ import config from "@/config";
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const baseQuery = fetchBaseQuery({
-  baseUrl: `${config.serverUrl}`,
+  baseUrl: `${config.serverBaseUrl}`,
   credentials: "include",
   prepareHeaders: (headers) => {
     // const state = getState() as RootState;

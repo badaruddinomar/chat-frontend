@@ -76,7 +76,7 @@ const ExploreFeature = () => {
           <div className="relative">
             <div className="bg-gradient-to-br from-purple-100 to-blue-100 rounded-3xl p-8">
               <Image
-                src="/placeholder.svg?height=500&width=600"
+                src="/Logo.svg"
                 alt="Feature showcase"
                 className="w-full h-auto rounded-2xl shadow-lg"
                 width={600}
