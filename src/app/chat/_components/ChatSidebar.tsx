@@ -53,7 +53,7 @@ export function ChatSidebar({
 
       {/* Contacts List */}
       <ScrollArea className="flex-1">
-        <div className="p-2">
+        <div>
           {filteredContacts.map((contact) => (
             <div
               key={contact.id}
@@ -61,7 +61,7 @@ export function ChatSidebar({
                 setSelectedChat(contact.id);
                 onChatSelect?.();
               }}
-              className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-accent ${
+              className={`flex items-center gap-3 py-3 px-2 rounded-lg cursor-pointer transition-colors hover:bg-accent ${
                 selectedChat === contact.id ? "bg-accent" : ""
               }`}
             >
