@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IMessage } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { ChatSidebar } from "./ChatSidebar";
 import { useChat } from "@/hooks/useChat";
+import { useReadMessagesMutation } from "@/redux/apiClient/messageApi";
+
 const AdminChatInterface = () => {
   const {
     messages,
@@ -35,6 +37,7 @@ const AdminChatInterface = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [messageInput, setMessageInput] = useState<string>("");
+  const [readMessages] = useReadMessagesMutation();
 
   const isLoading = false;
   const handleChatSelect = () => {
@@ -54,6 +57,12 @@ const AdminChatInterface = () => {
       console.log(err);
     }
   };
+  useEffect(() => {
+    const handleMessageRead = async () => {
+      await readMessages({ senderId: selectedUser?.user?.userId });
+    };
+    handleMessageRead();
+  }, [readMessages, selectedUser?.user?.userId]);
   return (
     <>
       {" "}

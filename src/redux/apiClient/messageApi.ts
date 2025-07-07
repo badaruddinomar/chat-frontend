@@ -26,7 +26,20 @@ export const messageApi = createApi({
         body: JSON.stringify(formData),
       }),
     }),
+    readMessages: builder.mutation({
+      query: (formData) => {
+        return {
+          url: `/messages/read`,
+          method: "PATCH",
+          body: JSON.stringify(formData || {}),
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetMessagesQuery, useSendMessagesMutation } = messageApi;
+export const {
+  useGetMessagesQuery,
+  useSendMessagesMutation,
+  useReadMessagesMutation,
+} = messageApi;

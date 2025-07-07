@@ -1,14 +1,16 @@
 "use client";
 import { useChat } from "@/hooks/useChat";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IMessage } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Smile, Paperclip } from "lucide-react";
+import { useReadMessagesMutation } from "@/redux/apiClient/messageApi";
 
 const CustomerChatInterface = () => {
   const { sendMessage, messages } = useChat();
+  const [readMessages] = useReadMessagesMutation();
   const [messageInput, setMessageInput] = useState<string>("");
 
   const isLoading = false;
@@ -24,6 +26,12 @@ const CustomerChatInterface = () => {
       console.log(err);
     }
   };
+  useEffect(() => {
+    const markMessageAsRead = async () => {
+      await readMessages({});
+    };
+    markMessageAsRead();
+  }, [readMessages]);
   return (
     <div className="flex flex-col h-full w-full">
       {/* Messages Area */}
