@@ -18,6 +18,7 @@ export const useChat = () => {
   const { selectedUser, messages } = useAppSelector(
     (state) => state.chatReducer
   );
+  const { user } = useAppSelector((state) => state.userReducer);
 
   const {
     data: users,
@@ -43,12 +44,27 @@ export const useChat = () => {
     if (!socket || !socket.connected) return;
     const handleNewMessage = (newMessage: IMessage) => {
       console.log("NEW MESSAGE:", newMessage);
-      // if (
-      //   newMessage?.senderId === selectedUser?.user?.userId ||
-      //   newMessage?.receiverId === selectedUser?.user?.userId
-      // ) {
-      dispatch(addMessage(newMessage));
-      // }
+      //  Admin/Support side: must have selectedUser
+      if (selectedUser?.user?.userId) {
+        const selectedId = Number(selectedUser.user.userId);
+
+        if (
+          Number(newMessage?.senderId) === selectedId ||
+          Number(newMessage?.receiverId) === selectedId
+        ) {
+          dispatch(addMessage(newMessage));
+        }
+      } else {
+        // Customer side: no selectedUser, just check if message is for me
+        const myId = Number(user?.user?.userId);
+
+        if (
+          Number(newMessage?.receiverId) === myId ||
+          Number(newMessage?.senderId) === myId
+        ) {
+          dispatch(addMessage(newMessage));
+        }
+      }
     };
 
     socket.on("newMessage", handleNewMessage);
@@ -56,7 +72,13 @@ export const useChat = () => {
     return () => {
       socket.off("newMessage", handleNewMessage);
     };
-  }, [selectedUser, dispatch]);
+  }, [selectedUser, dispatch, user]);
+
+  useEffect(() => {
+    if (selectedUser) {
+      refetchMessages();
+    }
+  }, [selectedUser, dispatch, refetchMessages]);
 
   useEffect(() => {
     const handleOnlineUsers = (userIds: string[]) => {
