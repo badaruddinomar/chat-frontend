@@ -19,7 +19,7 @@ export function ChatSidebar({
   const { setSelectedUser, users, selectedUser } = useChat();
   const { onlineUserIds } = useChat();
   const filteredContacts = users?.filter((user: IUser) =>
-    user.user?.name.toLowerCase().includes(searchQuery.toLowerCase())
+    user.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (

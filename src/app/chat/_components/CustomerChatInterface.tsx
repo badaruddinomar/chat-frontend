@@ -26,12 +26,12 @@ const CustomerChatInterface = () => {
       console.log(err);
     }
   };
-  useEffect(() => {
-    const markMessageAsRead = async () => {
-      await readMessages({});
-    };
-    markMessageAsRead();
-  }, [readMessages]);
+  // useEffect(() => {
+  //   const markMessageAsRead = async () => {
+  //     await readMessages({});
+  //   };
+  //   markMessageAsRead();
+  // }, [readMessages]);
   return (
     <div className="flex flex-col h-full w-full">
       {/* Messages Area */}

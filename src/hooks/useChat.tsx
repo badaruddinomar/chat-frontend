@@ -2,6 +2,7 @@ import {
   setSelectedUser,
   addMessage,
   setMessages,
+  removeMessage,
 } from "@/redux/reducer/chatReducer";
 import { useEffect, useState } from "react";
 import { IMessage, IUser } from "@/types";
@@ -36,6 +37,7 @@ export const useChat = () => {
 
   useEffect(() => {
     if (fetchedMessages) {
+      console.log("MESSAGES:", fetchedMessages.meta);
       dispatch(setMessages(fetchedMessages?.data));
     }
   }, [fetchedMessages, dispatch]);
@@ -43,27 +45,28 @@ export const useChat = () => {
   useEffect(() => {
     if (!socket || !socket.connected) return;
     const handleNewMessage = (newMessage: IMessage) => {
-      console.log("NEW MESSAGE:", newMessage);
-      //  Admin/Support side: must have selectedUser
-      if (selectedUser?.user?.userId) {
-        const selectedId = Number(selectedUser.user.userId);
+      console.log("📩 NEW MESSAGE:", newMessage);
 
-        if (
-          Number(newMessage?.senderId) === selectedId ||
-          Number(newMessage?.receiverId) === selectedId
-        ) {
-          dispatch(addMessage(newMessage));
-        }
-      } else {
-        // Customer side: no selectedUser, just check if message is for me
-        const myId = Number(user?.user?.userId);
+      const myId = Number(user?.user?.userId);
 
-        if (
-          Number(newMessage?.receiverId) === myId ||
-          Number(newMessage?.senderId) === myId
-        ) {
-          dispatch(addMessage(newMessage));
-        }
+      if (!myId) return;
+
+      // If user is Admin/Support — you have selectedUser (the current chat opened)
+      if (
+        selectedUser?.user?.userId &&
+        (Number(newMessage.senderId) === Number(selectedUser.user.userId) ||
+          Number(newMessage.receiverId) === Number(selectedUser.user.userId))
+      ) {
+        dispatch(addMessage(newMessage));
+        return;
+      }
+
+      // If user is Customer — no selectedUser, check if the message involves me
+      if (
+        Number(newMessage.senderId) === myId ||
+        Number(newMessage.receiverId) === myId
+      ) {
+        dispatch(addMessage(newMessage));
       }
     };
 
@@ -79,6 +82,21 @@ export const useChat = () => {
       refetchMessages();
     }
   }, [selectedUser, dispatch, refetchMessages]);
+
+  useEffect(() => {
+    if (!socket || !socket.connected) return;
+
+    const handleMessageDeleted = ({ messageId }: { messageId: string }) => {
+      console.log("Message deleted:", messageId);
+      dispatch(removeMessage(Number(messageId)));
+    };
+
+    socket.on("messageDeleted", handleMessageDeleted);
+
+    return () => {
+      socket.off("messageDeleted", handleMessageDeleted);
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const handleOnlineUsers = (userIds: string[]) => {

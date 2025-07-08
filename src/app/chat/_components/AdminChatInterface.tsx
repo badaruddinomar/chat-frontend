@@ -21,10 +21,11 @@ import {
   Paperclip,
   Menu,
   ArrowLeft,
+  Trash,
 } from "lucide-react";
 import { ChatSidebar } from "./ChatSidebar";
 import { useChat } from "@/hooks/useChat";
-import { useReadMessagesMutation } from "@/redux/apiClient/messageApi";
+// import { useReadMessagesMutation } from "@/redux/apiClient/messageApi";
 
 const AdminChatInterface = () => {
   const {
@@ -37,7 +38,7 @@ const AdminChatInterface = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [messageInput, setMessageInput] = useState<string>("");
-  const [readMessages] = useReadMessagesMutation();
+  // const [readMessages] = useReadMessagesMutation();
 
   const isLoading = false;
   const handleChatSelect = () => {
@@ -57,12 +58,12 @@ const AdminChatInterface = () => {
       console.log(err);
     }
   };
-  useEffect(() => {
-    const handleMessageRead = async () => {
-      await readMessages({ senderId: selectedUser?.user?.userId });
-    };
-    handleMessageRead();
-  }, [readMessages, selectedUser?.user?.userId]);
+  // useEffect(() => {
+  //   const handleMessageRead = async () => {
+  //     await readMessages({ senderId: selectedUser?.user?.userId });
+  //   };
+  //   handleMessageRead();
+  // }, [readMessages, selectedUser?.user?.userId]);
   return (
     <>
       {" "}
