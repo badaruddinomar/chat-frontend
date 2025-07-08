@@ -45,24 +45,22 @@ export const useChat = () => {
   useEffect(() => {
     if (!socket || !socket.connected) return;
     const handleNewMessage = (newMessage: IMessage) => {
+      console.log("NEW MESSAGE:",newMessage)
       const myId = Number(user?.user?.userId);
-
       if (!myId) return;
-
-      // If user is Admin/Support — you have selectedUser (the current chat opened)
+    
       if (
-        selectedUser?.user?.userId &&
-        (Number(newMessage.senderId) === Number(selectedUser.user.userId) ||
-          Number(newMessage.receiverId) === Number(selectedUser.user.userId))
+        Number(newMessage.senderId) === myId ||
+        Number(newMessage.receiverId) === myId
       ) {
         dispatch(addMessage(newMessage));
         return;
       }
-
-      // If user is Customer — no selectedUser, check if the message involves me
+    
       if (
-        Number(newMessage.senderId) === myId ||
-        Number(newMessage.receiverId) === myId
+        selectedUser?.user?.userId &&
+        (Number(newMessage.senderId) === Number(selectedUser.user.userId) ||
+         Number(newMessage.receiverId) === Number(selectedUser.user.userId))
       ) {
         dispatch(addMessage(newMessage));
       }
@@ -112,8 +110,7 @@ export const useChat = () => {
     } catch (error) {
       console.error("Send message error:", error);
     }
-  };
-
+  }
   return {
     users: users?.data,
     selectedUser,
