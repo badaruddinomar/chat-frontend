@@ -5,13 +5,19 @@ import { IMessage } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Smile, Paperclip } from "lucide-react";
-import { useReadMessagesMutation } from "@/redux/apiClient/messageApi";
+import { Send, Smile, Paperclip, Trash } from "lucide-react";
+import {
+  useDeleteMessageMutation,
+  useReadMessagesMutation,
+} from "@/redux/apiClient/messageApi";
+import { useAppSelector } from "@/redux/hooks";
 
 const CustomerChatInterface = () => {
   const { sendMessage, messages } = useChat();
   const [readMessages] = useReadMessagesMutation();
   const [messageInput, setMessageInput] = useState<string>("");
+  const { user } = useAppSelector((state) => state.userReducer);
+  const [deleteMessage] = useDeleteMessageMutation();
 
   const isLoading = false;
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +38,14 @@ const CustomerChatInterface = () => {
   //   };
   //   markMessageAsRead();
   // }, [readMessages]);
+
+  const deleteMessageHandler = async (messageId: string) => {
+    try {
+      await deleteMessage(messageId).unwrap();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="flex flex-col h-full w-full">
       {/* Messages Area */}
@@ -58,7 +72,16 @@ const CustomerChatInterface = () => {
                     : "bg-muted"
                 }`}
               >
-                <p className="text-sm break-words">{message?.message}</p>
+                <p className="text-sm break-words">
+                  <span>{message?.message}</span>
+                  {message?.senderId === user?.user.userId && (
+                    <Trash
+                      size={14}
+                      onClick={() => deleteMessageHandler(message.messageId)}
+                      className="cursor-pointer hover:opacity-70 transition-all duration-300"
+                    />
+                  )}
+                </p>
               </div>
             </div>
           ))}

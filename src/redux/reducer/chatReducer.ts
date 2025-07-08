@@ -26,8 +26,10 @@ const chatSlice = createSlice({
       }
     },
     removeMessage: (state, action) => {
-      const id = action.payload;
-      state.messages = state.messages.filter((msg) => msg.messageId !== id);
+      const id = Number(action.payload);
+      state.messages = state.messages.filter(
+        (msg) => Number(msg.messageId) !== id
+      );
     },
     setMessages: (state, action: PayloadAction<IMessage[]>) => {
       state.messages = action.payload;

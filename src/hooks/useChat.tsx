@@ -37,7 +37,7 @@ export const useChat = () => {
 
   useEffect(() => {
     if (fetchedMessages) {
-      console.log("MESSAGES:", fetchedMessages.meta);
+      console.log("MESSAGES LENGTH", fetchedMessages?.data.length);
       dispatch(setMessages(fetchedMessages?.data));
     }
   }, [fetchedMessages, dispatch]);
@@ -45,8 +45,6 @@ export const useChat = () => {
   useEffect(() => {
     if (!socket || !socket.connected) return;
     const handleNewMessage = (newMessage: IMessage) => {
-      console.log("📩 NEW MESSAGE:", newMessage);
-
       const myId = Number(user?.user?.userId);
 
       if (!myId) return;
@@ -85,7 +83,6 @@ export const useChat = () => {
 
   useEffect(() => {
     if (!socket || !socket.connected) return;
-
     const handleMessageDeleted = ({ messageId }: { messageId: string }) => {
       console.log("Message deleted:", messageId);
       dispatch(removeMessage(Number(messageId)));
@@ -96,7 +93,7 @@ export const useChat = () => {
     return () => {
       socket.off("messageDeleted", handleMessageDeleted);
     };
-  }, [dispatch]);
+  }, [dispatch, refetchMessages]);
 
   useEffect(() => {
     const handleOnlineUsers = (userIds: string[]) => {

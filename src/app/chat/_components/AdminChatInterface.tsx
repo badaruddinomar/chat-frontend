@@ -25,7 +25,11 @@ import {
 } from "lucide-react";
 import { ChatSidebar } from "./ChatSidebar";
 import { useChat } from "@/hooks/useChat";
-// import { useReadMessagesMutation } from "@/redux/apiClient/messageApi";
+
+import {
+  // useReadMessagesMutation,
+  useDeleteMessageMutation,
+} from "@/redux/apiClient/messageApi";
 
 const AdminChatInterface = () => {
   const {
@@ -38,6 +42,8 @@ const AdminChatInterface = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [messageInput, setMessageInput] = useState<string>("");
+  const [deleteMessage] = useDeleteMessageMutation();
+
   // const [readMessages] = useReadMessagesMutation();
 
   const isLoading = false;
@@ -64,6 +70,14 @@ const AdminChatInterface = () => {
   //   };
   //   handleMessageRead();
   // }, [readMessages, selectedUser?.user?.userId]);
+
+  const deleteMessageHandler = async (messageId: string) => {
+    try {
+      await deleteMessage(messageId).unwrap();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <>
       {" "}
@@ -198,7 +212,7 @@ const AdminChatInterface = () => {
                 {messages?.map((message: IMessage, ind) => (
                   <div
                     key={ind}
-                    className={`flex ${
+                    className={`flex  space-x-1 ${
                       message?.receiverId === selectedUser?.user?.userId
                         ? "justify-end"
                         : "justify-start"
@@ -211,7 +225,16 @@ const AdminChatInterface = () => {
                           : "bg-muted"
                       }`}
                     >
-                      <p className="text-sm break-words">{message?.message}</p>
+                      <p className="text-sm break-words">
+                        <span>{message?.message}</span>
+                        <Trash
+                          size={14}
+                          onClick={() =>
+                            deleteMessageHandler(message.messageId)
+                          }
+                          className="cursor-pointer hover:opacity-70 transition-all duration-300"
+                        />
+                      </p>
                     </div>
                   </div>
                 ))}
