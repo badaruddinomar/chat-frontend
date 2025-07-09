@@ -32,12 +32,12 @@ const CustomerChatInterface = () => {
       console.log(err);
     }
   };
-  // useEffect(() => {
-  //   const markMessageAsRead = async () => {
-  //     await readMessages({});
-  //   };
-  //   markMessageAsRead();
-  // }, [readMessages]);
+  useEffect(() => {
+    const markMessageAsRead = async () => {
+      await readMessages({});
+    };
+    markMessageAsRead();
+  }, [readMessages]);
 
   const deleteMessageHandler = async (messageId: string) => {
     try {

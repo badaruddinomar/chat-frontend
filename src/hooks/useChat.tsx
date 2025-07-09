@@ -37,18 +37,16 @@ export const useChat = () => {
 
   useEffect(() => {
     if (fetchedMessages) {
-      console.log("MESSAGES LENGTH", fetchedMessages?.data.length);
       dispatch(setMessages(fetchedMessages?.data));
     }
   }, [fetchedMessages, dispatch]);
 
   useEffect(() => {
-    if (!socket || !socket.connected) return;
+    if (!socket) return;
     const handleNewMessage = (newMessage: IMessage) => {
-      console.log("NEW MESSAGE:",newMessage)
       const myId = Number(user?.user?.userId);
       if (!myId) return;
-    
+
       if (
         Number(newMessage.senderId) === myId ||
         Number(newMessage.receiverId) === myId
@@ -56,11 +54,10 @@ export const useChat = () => {
         dispatch(addMessage(newMessage));
         return;
       }
-    
       if (
         selectedUser?.user?.userId &&
         (Number(newMessage.senderId) === Number(selectedUser.user.userId) ||
-         Number(newMessage.receiverId) === Number(selectedUser.user.userId))
+          Number(newMessage.receiverId) === Number(selectedUser.user.userId))
       ) {
         dispatch(addMessage(newMessage));
       }
@@ -71,7 +68,7 @@ export const useChat = () => {
     return () => {
       socket.off("newMessage", handleNewMessage);
     };
-  }, [selectedUser, dispatch, user]);
+  }, [dispatch, selectedUser?.user.userId, user?.user.userId]);
 
   useEffect(() => {
     if (selectedUser) {
@@ -80,7 +77,7 @@ export const useChat = () => {
   }, [selectedUser, dispatch, refetchMessages]);
 
   useEffect(() => {
-    if (!socket || !socket.connected) return;
+    if (!socket) return;
     const handleMessageDeleted = ({ messageId }: { messageId: string }) => {
       console.log("Message deleted:", messageId);
       dispatch(removeMessage(Number(messageId)));
@@ -110,7 +107,7 @@ export const useChat = () => {
     } catch (error) {
       console.error("Send message error:", error);
     }
-  }
+  };
   return {
     users: users?.data,
     selectedUser,
