@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { IMessage } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ import { ChatSidebar } from "./ChatSidebar";
 import { useChat } from "@/hooks/useChat";
 
 import {
-  useReadMessagesMutation,
+  // useReadMessagesMutation,
   useDeleteMessageMutation,
 } from "@/redux/apiClient/messageApi";
 
@@ -44,7 +44,7 @@ const AdminChatInterface = () => {
   const [messageInput, setMessageInput] = useState<string>("");
   const [deleteMessage] = useDeleteMessageMutation();
 
-  const [readMessages] = useReadMessagesMutation();
+  // const [readMessages] = useReadMessagesMutation();
 
   const isLoading = false;
   const handleChatSelect = () => {
@@ -64,12 +64,12 @@ const AdminChatInterface = () => {
       console.log(err);
     }
   };
-  useEffect(() => {
-    const handleMessageRead = async () => {
-      await readMessages({ senderId: selectedUser?.user?.userId });
-    };
-    handleMessageRead();
-  }, [readMessages, selectedUser?.user?.userId]);
+  // useEffect(() => {
+  //   const handleMessageRead = async () => {
+  //     await readMessages({ senderId: selectedUser?.user?.userId });
+  //   };
+  //   handleMessageRead();
+  // }, [readMessages, selectedUser?.user?.userId]);
 
   const deleteMessageHandler = async (messageId: string) => {
     try {

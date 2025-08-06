@@ -1,6 +1,6 @@
 "use client";
 import { useChat } from "@/hooks/useChat";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { IMessage } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,13 +8,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Smile, Paperclip, Trash } from "lucide-react";
 import {
   useDeleteMessageMutation,
-  useReadMessagesMutation,
+  // useReadMessagesMutation,
 } from "@/redux/apiClient/messageApi";
 import { useAppSelector } from "@/redux/hooks";
 
 const CustomerChatInterface = () => {
   const { sendMessage, messages } = useChat();
-  const [readMessages] = useReadMessagesMutation();
+  // const [readMessages] = useReadMessagesMutation();
   const [messageInput, setMessageInput] = useState<string>("");
   const { user } = useAppSelector((state) => state.userReducer);
   const [deleteMessage] = useDeleteMessageMutation();
@@ -32,12 +32,12 @@ const CustomerChatInterface = () => {
       console.log(err);
     }
   };
-  useEffect(() => {
-    const markMessageAsRead = async () => {
-      await readMessages({});
-    };
-    markMessageAsRead();
-  }, [readMessages]);
+  // useEffect(() => {
+  //   const markMessageAsRead = async () => {
+  //     await readMessages({});
+  //   };
+  //   markMessageAsRead();
+  // }, [readMessages]);
 
   const deleteMessageHandler = async (messageId: string) => {
     try {

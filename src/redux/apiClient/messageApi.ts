@@ -49,6 +49,6 @@ export const messageApi = createApi({
 export const {
   useGetMessagesQuery,
   useSendMessagesMutation,
-  useReadMessagesMutation,
+  // useReadMessagesMutation,
   useDeleteMessageMutation,
 } = messageApi;
